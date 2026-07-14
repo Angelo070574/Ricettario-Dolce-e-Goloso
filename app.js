@@ -396,3 +396,40 @@ ricerca.addEventListener("input", cercaRicetta);
 categoria.addEventListener("change", cercaRicetta);
 
 mostraRicetta(indiceCorrente);
+const PASSWORD_RICETTARIO = "dolce2009";
+
+const schermataAccesso =
+    document.getElementById("schermataAccesso");
+
+const campoPassword =
+    document.getElementById("campoPassword");
+
+const pulsanteAccesso =
+    document.getElementById("pulsanteAccesso");
+
+const errorePassword =
+    document.getElementById("errorePassword");
+
+function provaAccesso() {
+    const passwordInserita = campoPassword.value.trim();
+
+    if (passwordInserita === PASSWORD_RICETTARIO) {
+        schermataAccesso.classList.add("nascosta");
+        errorePassword.textContent = "";
+        campoPassword.value = "";
+        return;
+    }
+
+    errorePassword.textContent = "Password non corretta.";
+    campoPassword.select();
+}
+
+pulsanteAccesso.addEventListener("click", provaAccesso);
+
+campoPassword.addEventListener("keydown", (evento) => {
+    if (evento.key === "Enter") {
+        provaAccesso();
+    }
+});
+
+campoPassword.focus();
