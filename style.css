@@ -101,14 +101,14 @@ button {
     background: var(--bianco);
     border: 1px solid #d1d1d1;
     border-radius: 14px;
-    padding: 14px;
+   padding: clamp(8px, 2vw, 14px); 
     box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08);
 }
 
 .intestazione-ricetta {
     min-height: 220px;
     display: grid;
-    grid-template-columns: 330px 1fr;
+    grid-template-columns: minmax(140px, 28%) 1fr;
     align-items: center;
     border-top: 5px solid #111;
     border-bottom: 5px solid #111;
@@ -393,4 +393,29 @@ tbody td:nth-child(8) {
         size: A4 landscape;
         margin: 8mm;
     }
+}
+@media (max-width: 768px) {
+
+  .contenitore {
+    padding: 10px;
+  }
+
+  .intestazione-ricetta {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .logo-testata {
+    width: 120px;
+    margin: 0 auto 15px;
+  }
+
+  .tabella-contenitore {
+    overflow-x: auto;
+  }
+
+  table {
+    min-width: 700px;
+  }
+
 }
