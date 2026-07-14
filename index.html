@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ricettario Dolce e Goloso</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="testata">
+        <div class="titoli-testata">
+            <h1>Ricettario Dolce e Goloso</h1>
+            <p>Archivio ricette di laboratorio</p>
+        </div>
+
+        <img
+            src="logo.jpeg"
+            alt="Logo Dolce e Goloso"
+            class="logo-testata"
+        >
+    </header>
+
+    <main class="contenitore">
+
+        <section class="barra-ricerca">
+            <input
+                type="search"
+                id="ricerca"
+                placeholder="Cerca un gusto..."
+            >
+
+            <select id="categoria">
+                <option value="tutte">Tutte le categorie</option>
+                <option value="basi">Basi</option>
+                <option value="creme">Creme</option>
+                <option value="frutta">Frutta</option>
+                <option value="granite">Granite</option>
+                <option value="semifreddi">Semifreddi</option>
+            </select>
+
+            <button class="bottone-nuova" id="nuovaRicetta">
+                + Nuova ricetta
+            </button>
+        </section>
+
+        <section class="scheda-ricetta">
+
+            <div class="intestazione-ricetta">
+
+                <div class="testo-marchio">
+                    <strong>GELATERIA</strong>
+                    <strong>ARTIGIANALE</strong>
+                    <span>dal 2009</span>
+                </div>
+
+                <h2 id="nomeRicetta">Nocciola</h2>
+
+            </div>
+
+            <div class="tabella-contenitore">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>INGREDIENTI</th>
+                            <th>3 kg</th>
+                            <th>3,5 kg</th>
+                            <th>4 kg</th>
+                            <th>4,5 kg</th>
+                            <th>5 kg</th>
+                            <th>5,5 kg</th>
+                            <th>6 kg</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        
+
+                        <tr>
+                            <th>Gusto</th>
+                            <td>240</td>
+                            <td>280</td>
+                            <td>320</td>
+                            <td>360</td>
+                            <td>400</td>
+                            <td>440</td>
+                            <td>480</td>
+                        </tr>
+
+                        <tr>
+                            <th>Destrosio</th>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+
+                        <tr>
+                            <th>Latte</th>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+
+                        <tr>
+                            <th>Panna</th>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+
+                        <tr>
+                            <th>Ingrediente 1</th>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+
+                        <tr>
+                            <th>Ingrediente 2</th>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+
+                        <tr>
+                            <th>Ingrediente 3</th>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="azioni">
+                <button id="precedente">← Precedente</button>
+                <button id="modifica">✎ Modifica</button>
+                <button id="stampa">▣ Stampa</button>
+                <button id="successiva">Successiva →</button>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="app.js"></script>
+
+</body>
+
+</html>
