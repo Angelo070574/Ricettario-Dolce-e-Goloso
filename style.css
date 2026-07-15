@@ -429,7 +429,11 @@ td {
 
 thead th:first-child,
 tbody th {
-    width: 95px;
+    width: 140px;
+    min-width: 140px;
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.2;
 }
 
 #nomeRicetta {

@@ -1,10 +1,54 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+import {
+    getAuth,
+    GoogleAuthProvider,
+    signInWithPopup,
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+import {
+    getFirestore,
+    doc,
+    getDoc,
+    setDoc,
+    onSnapshot
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+const firebaseConfig = {
+    apiKey: "AIzaSyAF-4PKBZ48oB3zeacu_KuctKoHxMljQEo",
+    authDomain: "dolce-e-goloso.firebaseapp.com",
+    projectId: "dolce-e-goloso",
+    storageBucket: "dolce-e-goloso.firebasestorage.app",
+    messagingSenderId: "91909515843",
+    appId: "1:91909515843:web:aebecb3128a37072dac2f6"
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const auth = getAuth(firebaseApp);
+const db = getFirestore(firebaseApp);
+const providerGoogle = new GoogleAuthProvider();
 const CHIAVE_ARCHIVIO = "ricettarioDolceEGolosoV3";
+const RACCOLTA_FIREBASE = "dolceEGoloso";
+const DOCUMENTO_FIREBASE = "ricettario";
+const riferimentoArchivioFirebase = doc(
+    db,
+    RACCOLTA_FIREBASE,
+    DOCUMENTO_FIREBASE
+);
 const NUMERO_COLONNE = 7;
+const INTESTAZIONI_PREDEFINITE = [
+    "3 kg",
+    "3,5 kg",
+    "4 kg",
+    "4,5 kg",
+    "5 kg",
+    "5,5 kg",
+    "6 kg"
+];
 const RIGHE_INIZIALI = 5;
 
 const ricettaIniziale = {
     nome: "Nocciola",
     categoria: "creme",
+    intestazioni: [...INTESTAZIONI_PREDEFINITE],
     ingredienti: creaRigheVuote(RIGHE_INIZIALI)
 };
 
@@ -97,6 +141,9 @@ function normalizzaRicetta(ricetta) {
     return {
         nome: String(ricetta?.nome || "Nuova ricetta"),
         categoria: String(ricetta?.categoria || "creme"),
+        intestazioni: Array.isArray(ricetta?.intestazioni)
+            ? ricetta.intestazioni
+            : [...INTESTAZIONI_PREDEFINITE],
         ingredienti: normalizzaIngredienti(
             ricetta?.ingredienti
         )
@@ -125,13 +172,88 @@ function caricaRicette() {
     }
 }
 
-function salvaArchivio() {
+async function salvaArchivio() {
     localStorage.setItem(
         CHIAVE_ARCHIVIO,
         JSON.stringify(ricette)
     );
-}
 
+    try {
+        await setDoc(
+            riferimentoArchivioFirebase,
+            {
+                ricette: ricette,
+                ultimoAggiornamento: new Date().toISOString()
+            },
+            { merge: true }
+        );
+
+        console.log("Archivio sincronizzato con Firebase.");
+    } catch (errore) {
+        console.error(
+            "Salvataggio Firebase non riuscito. La copia locale è comunque salva:",
+            errore
+        );
+    }
+}
+function avviaSincronizzazioneFirebase() {
+    onSnapshot(
+        riferimentoArchivioFirebase,
+        async (documento) => {
+            if (!documento.exists()) {
+                try {
+                    await setDoc(riferimentoArchivioFirebase, {
+                        ricette,
+                        ultimoAggiornamento: new Date().toISOString()
+                    });
+
+                    console.log(
+                        "Archivio Firebase creato con le ricette presenti."
+                    );
+                } catch (errore) {
+                    console.error(
+                        "Errore creazione archivio Firebase:",
+                        errore
+                    );
+                }
+
+                return;
+            }
+
+            const datiFirebase = documento.data();
+
+            if (
+                !Array.isArray(datiFirebase.ricette) ||
+                datiFirebase.ricette.length === 0
+            ) {
+                return;
+            }
+
+            ricette = datiFirebase.ricette.map(normalizzaRicetta);
+
+            localStorage.setItem(
+                CHIAVE_ARCHIVIO,
+                JSON.stringify(ricette)
+            );
+
+            if (indiceCorrente >= ricette.length) {
+                indiceCorrente = 0;
+            }
+
+            mostraRicetta(indiceCorrente);
+
+            console.log(
+                "Ricette aggiornate da Firebase."
+            );
+        },
+        (errore) => {
+            console.error(
+                "Errore sincronizzazione Firebase:",
+                errore
+            );
+        }
+    );
+}
 function creaRigaIngrediente(ingrediente) {
     const riga = document.createElement("tr");
 
@@ -165,6 +287,13 @@ function mostraRicetta(indice) {
     modalitaModifica = false;
 
     const ricetta = ricette[indiceCorrente];
+    const celleIntestazione = document.querySelectorAll("#intestazioneTabella th");
+
+ricetta.intestazioni.forEach((testo, indice) => {
+    if (celleIntestazione[indice + 1]) {
+        celleIntestazione[indice + 1].textContent = testo;
+    }
+});
 
     nomeRicetta.textContent = ricetta.nome;
     corpoTabella.innerHTML = "";
@@ -185,6 +314,12 @@ function attivaModifica() {
 
     nomeRicetta.contentEditable = "true";
     nomeRicetta.classList.add("campo-modificabile");
+    document
+    .querySelectorAll("#intestazioneTabella th:not(:first-child)")
+    .forEach((cella) => {
+        cella.contentEditable = "true";
+        cella.classList.add("campo-modificabile");
+    });
 
     corpoTabella
         .querySelectorAll("th, td")
@@ -201,6 +336,12 @@ function attivaModifica() {
 function disattivaModifica() {
     nomeRicetta.contentEditable = "false";
     nomeRicetta.classList.remove("campo-modificabile");
+    document
+    .querySelectorAll("#intestazioneTabella th:not(:first-child)")
+    .forEach((cella) => {
+        cella.contentEditable = "false";
+        cella.classList.remove("campo-modificabile");
+    });
 
     corpoTabella
         .querySelectorAll("th, td")
@@ -237,11 +378,18 @@ function salvaModifiche() {
         return;
     }
 
-    ricette[indiceCorrente] = {
-        ...ricette[indiceCorrente],
-        nome: nuovoNome,
-        ingredienti: leggiIngredientiDallaTabella()
-    };
+  const intestazioni = Array.from(
+    document.querySelectorAll("#intestazioneTabella th")
+)
+.slice(1)
+.map(cella => cella.textContent.trim());
+
+ricette[indiceCorrente] = {
+    ...ricette[indiceCorrente],
+    nome: nuovoNome,
+    intestazioni,
+    ingredienti: leggiIngredientiDallaTabella()
+}; 
 
     salvaArchivio();
 
@@ -328,6 +476,7 @@ function creaNuovaRicetta() {
         categoria: categorieValide.includes(valoreCategoria)
             ? valoreCategoria
             : "creme",
+           intestazioni: [...INTESTAZIONI_PREDEFINITE], 
         ingredienti: creaRigheVuote(RIGHE_INIZIALI)
     };
 
@@ -389,13 +538,14 @@ bottoneSuccessiva.addEventListener("click", () => {
 });
 
 bottoneStampa.addEventListener("click", () => {
-    window.print();
+    window.print();F
 });
 
 ricerca.addEventListener("input", cercaRicetta);
 categoria.addEventListener("change", cercaRicetta);
 
 mostraRicetta(indiceCorrente);
+avviaSincronizzazioneFirebase();
 const PASSWORD_RICETTARIO = "dolce2009";
 
 const schermataAccesso =
