@@ -59,7 +59,9 @@ let modalitaModifica = false;
 const nomeRicetta = document.getElementById("nomeRicetta");
 const corpoTabella = document.querySelector("tbody");
 const ricerca = document.getElementById("ricerca");
-const categoria = document.getElementById("categoria");
+const pulsantiCategoria = document.querySelectorAll(".categoria-ricetta");
+const elencoRicette = document.getElementById("elencoRicette");
+let categoriaSelezionata = null;
 
 const bottoneNuova = document.getElementById("nuovaRicetta");
 const bottonePrecedente = document.getElementById("precedente");
@@ -488,24 +490,128 @@ function creaNuovaRicetta() {
     attivaModifica();
 }
 
+function categoriaPerElenco(ricetta) {
+    const valore = String(ricetta?.categoria || "")
+        .trim()
+        .toLowerCase();
+
+    if (valore === "creme") {
+        return "creme";
+    }
+
+    if (valore === "frutta") {
+        return "frutta";
+    }
+
+    if (valore === "granite") {
+        return "granite";
+    }
+
+    return "varie";
+}
+
+function aggiornaConteggiCategorie() {
+    const conteggi = {
+        creme: 0,
+        frutta: 0,
+        granite: 0,
+        varie: 0
+    };
+
+    ricette.forEach((ricetta) => {
+        const gruppo = categoriaPerElenco(ricetta);
+        conteggi[gruppo] += 1;
+    });
+
+    document.getElementById("conteggioCreme").textContent =
+        conteggi.creme;
+
+    document.getElementById("conteggioFrutta").textContent =
+        conteggi.frutta;
+
+    document.getElementById("conteggioGranite").textContent =
+        conteggi.granite;
+
+    document.getElementById("conteggioVarie").textContent =
+        conteggi.varie;
+}
+
+function mostraElencoCategoria(categoriaScelta) {
+    categoriaSelezionata = categoriaScelta;
+
+    pulsantiCategoria.forEach((pulsante) => {
+        pulsante.classList.toggle(
+            "attiva",
+            pulsante.dataset.categoria === categoriaScelta
+        );
+    });
+
+    const ricetteCategoria = ricette
+        .map((ricetta, indice) => ({
+            ricetta,
+            indice
+        }))
+        .filter(({ ricetta }) =>
+            categoriaPerElenco(ricetta) === categoriaScelta
+        )
+        .sort((a, b) =>
+            a.ricetta.nome.localeCompare(
+                b.ricetta.nome,
+                "it",
+                { sensitivity: "base" }
+            )
+        );
+
+    elencoRicette.innerHTML = "";
+    elencoRicette.classList.remove("nascosto");
+
+    if (ricetteCategoria.length === 0) {
+        elencoRicette.innerHTML = `
+            <p class="elenco-vuoto">
+                Nessuna ricetta salvata in questa categoria.
+            </p>
+        `;
+        return;
+    }
+
+    ricetteCategoria.forEach(({ ricetta, indice }) => {
+        const pulsanteRicetta = document.createElement("button");
+
+        pulsanteRicetta.type = "button";
+        pulsanteRicetta.className = "voce-elenco-ricetta";
+        pulsanteRicetta.textContent = ricetta.nome;
+
+        pulsanteRicetta.addEventListener("click", () => {
+            mostraRicetta(indice);
+            elencoRicette.classList.add("nascosto");
+        });
+
+        elencoRicette.appendChild(pulsanteRicetta);
+    });
+}
+
 function cercaRicetta() {
     const testo = ricerca.value.trim().toLowerCase();
-    const filtroCategoria = categoria.value;
 
-    const indice = ricette.findIndex((ricetta) => {
-        const nomeCorrisponde = ricetta.nome
+    if (!testo) {
+        if (categoriaSelezionata) {
+            mostraElencoCategoria(categoriaSelezionata);
+        } else {
+            elencoRicette.classList.add("nascosto");
+        }
+
+        return;
+    }
+
+    const indice = ricette.findIndex((ricetta) =>
+        ricetta.nome
             .toLowerCase()
-            .includes(testo);
-
-        const categoriaCorrisponde =
-            filtroCategoria === "tutte" ||
-            ricetta.categoria === filtroCategoria;
-
-        return nomeCorrisponde && categoriaCorrisponde;
-    });
+            .includes(testo)
+    );
 
     if (indice !== -1) {
         mostraRicetta(indice);
+        elencoRicette.classList.add("nascosto");
     }
 }
 
@@ -542,8 +648,12 @@ bottoneStampa.addEventListener("click", () => {
 });
 
 ricerca.addEventListener("input", cercaRicetta);
-categoria.addEventListener("change", cercaRicetta);
-
+pulsantiCategoria.forEach((pulsante) => {
+    pulsante.addEventListener("click", () => {
+        mostraElencoCategoria(pulsante.dataset.categoria);
+    });
+});
+aggiornaConteggiCategorie();
 mostraRicetta(indiceCorrente);
 avviaSincronizzazioneFirebase();
 const PASSWORD_RICETTARIO = "dolce2009";

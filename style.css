@@ -525,3 +525,115 @@ tbody th {
 .schermata-accesso.nascosta {
     display: none;
 }
+.categorie-ricette {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    width: 100%;
+}
+
+.categoria-ricetta {
+    border: 2px solid #c89213;
+    background: #ffffff;
+    color: #8a6500;
+    border-radius: 14px;
+    padding: 14px 12px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.categoria-ricetta:hover,
+.categoria-ricetta.attiva {
+    background: #d6a431;
+    color: #ffffff;
+}
+
+.conteggio-categoria {
+    min-width: 28px;
+    height: 28px;
+    padding: 0 7px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.12);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+}
+
+.elenco-ricette {
+    margin: 14px 0 20px;
+    padding: 16px;
+    border: 2px solid #d6a431;
+    border-radius: 16px;
+    background: #ffffff;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.voce-elenco-ricetta {
+    min-height: 72px;
+    border: 2px solid #c89213;
+    background: linear-gradient(135deg, #e7ba55, #c88c0f);
+    color: #ffffff;
+    border-radius: 16px;
+    padding: 16px 14px;
+    font-size: 20px;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.14);
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.voce-elenco-ricetta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 14px rgba(0, 0, 0, 0.2);
+}
+
+.voce-elenco-ricetta:active {
+    transform: scale(0.98);
+}
+
+.elenco-vuoto {
+    margin: 0;
+    grid-column: 1 / -1;
+    text-align: center;
+    font-size: 17px;
+}
+
+.nascosto {
+    display: none !important;
+}
+
+@media (max-width: 800px) {
+    .categorie-ricette {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .elenco-ricette {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .categorie-ricette,
+    .elenco-ricette {
+        grid-template-columns: 1fr;
+    }
+
+    .categoria-ricetta,
+    .voce-elenco-ricetta {
+        font-size: 16px;
+    }
+}

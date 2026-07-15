@@ -53,26 +53,41 @@
     <main class="contenitore">
 
         <section class="barra-ricerca">
+            <button class="bottone-nuova" id="nuovaRicetta">
+    + Nuova ricetta
+</button>
             <input
                 type="search"
                 id="ricerca"
                 placeholder="Cerca un gusto..."
             >
 
-            <select id="categoria">
-                <option value="tutte">Tutte le categorie</option>
-                <option value="basi">Basi</option>
-                <option value="creme">Creme</option>
-                <option value="frutta">Frutta</option>
-                <option value="granite">Granite</option>
-                <option value="semifreddi">Semifreddi</option>
-            </select>
+           <div class="categorie-ricette">
+    <button type="button" class="categoria-ricetta" data-categoria="creme">
+        Gusti crema
+        <span class="conteggio-categoria" id="conteggioCreme">0</span>
+    </button>
 
-            <button class="bottone-nuova" id="nuovaRicetta">
-                + Nuova ricetta
-            </button>
-        </section>
+    <button type="button" class="categoria-ricetta" data-categoria="frutta">
+        Gusti frutta
+        <span class="conteggio-categoria" id="conteggioFrutta">0</span>
+    </button>
 
+    <button type="button" class="categoria-ricetta" data-categoria="granite">
+        Granite
+        <span class="conteggio-categoria" id="conteggioGranite">0</span>
+    </button>
+
+    <button type="button" class="categoria-ricetta" data-categoria="varie">
+        Varie
+        <span class="conteggio-categoria" id="conteggioVarie">0</span>
+    </button>
+</div>
+</section>
+     
+
+
+<section id="elencoRicette" class="elenco-ricette nascosto"></section>
         <section class="scheda-ricetta">
 
             <div class="intestazione-ricetta">
